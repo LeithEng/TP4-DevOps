@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: (env.BRANCH_NAME ?: 'main'),
+                git branch: ('ex1'),
                     url: 'https://github.com/LeithEng/TP4-DevOps.git'
             }
         }
