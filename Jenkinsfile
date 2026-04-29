@@ -2,7 +2,6 @@ pipeline {
     agent any
     tools {
         nodejs 'NodeJS-18'
-        sonarScanner 'SonarQubeScanner'
     }
     stages {
         stage('Checkout') {
@@ -34,12 +33,15 @@ pipeline {
             steps {
                 dir('app') {
                     withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            sonar-scanner \
-                              -Dsonar.projectKey=mon-app-devops \
-                              -Dsonar.sources=src \
-                              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-                        '''
+                        script {
+                            def scannerHome = tool 'SonarQubeScanner'
+                            sh """
+                                ${scannerHome}/bin/sonar-scanner \
+                                  -Dsonar.projectKey=mon-app-devops \
+                                  -Dsonar.sources=src \
+                                  -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+                            """
+                        }
                     }
                 }
             }
