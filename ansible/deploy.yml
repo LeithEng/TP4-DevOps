@@ -1,0 +1,40 @@
+---
+- name: Déployer l'application sur Kubernetes
+  hosts: local
+  gather_facts: false
+
+  vars:
+    namespace: "devops-tp"
+    docker_image: "votre-dockerhub-user/mon-app-devops"
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
+    kubeconfig: "{{ lookup('env', 'KUBECONFIG') | default('~/.kube/config') }}"
+
+  tasks:
+    - name: Générer le manifest Deployment
+      template:
+        src: templates/deployment.yaml.j2
+        dest: /tmp/deployment.yaml
+
+    - name: Générer le manifest Service
+      template:
+        src: templates/service.yaml.j2
+        dest: /tmp/service.yaml
+
+    - name: Générer le manifest Ingress
+      template:
+        src: templates/ingress.yaml.j2
+        dest: /tmp/ingress.yaml
+
+    - name: Appliquer les manifests Kubernetes
+      shell: "kubectl apply -f /tmp/deployment.yaml -f /tmp/service.yaml -f /tmp/ingress.yaml --kubeconfig={{ kubeconfig }}"
+
+    - name: Attendre que le déploiement soit disponible
+      shell: "kubectl rollout status deployment/mon-app-devops -n {{ namespace }} --timeout=120s --kubeconfig={{ kubeconfig }}"
+
+    - name: Afficher les pods déployés
+      shell: "kubectl get pods -n {{ namespace }} --kubeconfig={{ kubeconfig }}"
+      register: pods_output
+
+    - name: Résultat
+      debug:
+        msg: "{{ pods_output.stdout_lines }}"

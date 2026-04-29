@@ -1,0 +1,23 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.23"
+    }
+  }
+}
+
+provider "kubernetes" {
+  config_path    = "~/.kube/config"
+  config_context = "docker-desktop"
+}
+
+resource "kubernetes_namespace" "app_namespace" {
+  metadata {
+    name = var.namespace
+    labels = {
+      managed-by = "terraform"
+      environment = var.environment
+    }
+  }
+}
