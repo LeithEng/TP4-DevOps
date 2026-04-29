@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        nodejs 'NodeJS-18'  
-        sonarQubeScanner 'SonarQubeScanner'
+        nodejs 'NodeJS-18'
+        sonarScanner 'SonarQubeScanner'
     }
     stages {
         stage('Checkout') {
