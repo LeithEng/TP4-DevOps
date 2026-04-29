@@ -6,8 +6,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/votre-user/mon-app-devops.git'
+                git branch: (env.BRANCH_NAME ?: 'main'),
+                    url: 'https://github.com/LeithEng/TP4-DevOps.git'
             }
         }
         stage('Install Dependencies') {
