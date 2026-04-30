@@ -84,6 +84,38 @@ stage('Docker Push') {
         }
     }
 }
+stage('Infrastructure Provisioning - Terraform') {
+    steps {
+        dir('terraform') {
+            sh 'terraform init'
+            sh 'terraform plan -out=tfplan'
+            sh 'terraform apply -auto-approve tfplan'
+        }
+    }
+}
+
+stage('Deploy - Ansible') {
+    steps {
+        withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "KUBECONFIG=/var/jenkins_home/.kube/config"]) {
+            dir('ansible') {
+                sh """
+                    ansible-playbook -i inventory.ini deploy.yml \
+                      -e image_tag=${BUILD_NUMBER}
+                """
+            }
+        }
+    }
+}
+
+stage('Smoke Test') {
+    steps {
+        sh """
+            sleep 15
+            curl -f http://mon-app.local/health || \
+              (echo 'SMOKE TEST FAILED - Application non accessible' && exit 1)
+        """
+    }
+}
     }
     post {
         failure { echo 'Pipeline échoué. Vérifier SonarQube Quality Gate.' }
