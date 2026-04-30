@@ -5,7 +5,7 @@
 
   vars:
     namespace: "devops-tp"
-    docker_image: "votre-dockerhub-user/mon-app-devops"
+    docker_image: "leitheng/mon-app-devops"
     image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
     kubeconfig: "{{ lookup('env', 'KUBECONFIG') | default('~/.kube/config') }}"
 
