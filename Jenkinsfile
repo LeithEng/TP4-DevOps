@@ -87,10 +87,13 @@ stage('Docker Push') {
 }
 stage('Infrastructure Provisioning - Terraform') {
     steps {
-        dir('terraform') {
-            sh 'terraform init'
-            sh 'terraform plan -out=tfplan'
-            sh 'terraform apply -auto-approve tfplan'
+        // Ensure Terraform picks the kubeconfig copied to the Jenkins home
+        withEnv(["KUBECONFIG=/var/jenkins_home/.kube/config"]) {
+            dir('terraform') {
+                sh 'terraform init'
+                sh 'terraform plan -out=tfplan'
+                sh 'terraform apply -auto-approve tfplan'
+            }
         }
     }
 }
