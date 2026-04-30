@@ -53,6 +53,37 @@ pipeline {
                 }
             }
         }
+        stage('Docker Build') {
+    steps {
+        script {
+            dockerImage = docker.build("votre-dockerhub-user/mon-app-devops:${BUILD_NUMBER}")
+        }
+    }
+}
+
+stage('Image Scanning - Trivy') {
+    steps {
+        sh """
+            trivy image \
+              --exit-code 0 \
+              --severity HIGH,CRITICAL \
+              --format table \
+              votre-dockerhub-user/mon-app-devops:${BUILD_NUMBER}
+        """
+        // exit-code 1 pour bloquer le pipeline sur vulnérabilité CRITICAL
+    }
+}
+
+stage('Docker Push') {
+    steps {
+        script {
+            docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+                dockerImage.push("${BUILD_NUMBER}")
+                dockerImage.push("latest")
+            }
+        }
+    }
+}
     }
     post {
         failure { echo 'Pipeline échoué. Vérifier SonarQube Quality Gate.' }
