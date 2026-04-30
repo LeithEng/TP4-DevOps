@@ -56,7 +56,7 @@ pipeline {
         stage('Docker Build') {
     steps {
         script {
-            dockerImage = docker.build("votre-dockerhub-user/mon-app-devops:${BUILD_NUMBER}")
+            dockerImage = docker.build("leitheng/mon-app-devops:${BUILD_NUMBER}")
         }
     }
 }
@@ -68,7 +68,7 @@ stage('Image Scanning - Trivy') {
               --exit-code 0 \
               --severity HIGH,CRITICAL \
               --format table \
-              votre-dockerhub-user/mon-app-devops:${BUILD_NUMBER}
+              leitheng/mon-app-devops:${BUILD_NUMBER}
         """
         // exit-code 1 pour bloquer le pipeline sur vulnérabilité CRITICAL
     }
