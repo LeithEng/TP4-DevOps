@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools {
         nodejs 'NodeJS-18'
+        terraform 'Terraform'
     }
     stages {
         stage('Checkout') {
