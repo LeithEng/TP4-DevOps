@@ -87,14 +87,27 @@ stage('Docker Push') {
 }
 stage('Infrastructure Provisioning - Terraform') {
     steps {
-        // Ensure Terraform picks the kubeconfig copied to the Jenkins home
-        withEnv(["KUBECONFIG=/var/jenkins_home/.kube/config"]) {
-            dir('terraform') {
-                sh 'terraform init'
-                sh 'terraform plan -out=tfplan'
-                sh 'terraform apply -auto-approve tfplan'
-            }
-        }
+                // Ensure Terraform picks the kubeconfig copied to the Jenkins home
+                withEnv(["KUBECONFIG=/var/jenkins_home/.kube/config"]) {
+                        // Debug: print kubeconfig and available contexts for troubleshooting
+                        sh '''
+                            echo "---- /var/jenkins_home/.kube/config (head) ----"
+                            sed -n '1,200p' /var/jenkins_home/.kube/config || true
+                            echo "---- contexts (grep 'name:') ----"
+                            grep -n '^[[:space:]]*name:' /var/jenkins_home/.kube/config || true
+                            if command -v kubectl >/dev/null 2>&1; then
+                                echo "---- kubectl contexts ----"
+                                kubectl config get-contexts --kubeconfig=/var/jenkins_home/.kube/config || true
+                            else
+                                echo "kubectl not installed in container"
+                            fi
+                        '''
+                        dir('terraform') {
+                                sh 'terraform init'
+                                sh 'terraform plan -out=tfplan'
+                                sh 'terraform apply -auto-approve tfplan'
+                        }
+                }
     }
 }
 
