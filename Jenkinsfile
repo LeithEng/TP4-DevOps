@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: ('ex1'),
+                git branch: ('ex3'),
                     url: 'https://github.com/LeithEng/TP4-DevOps.git'
             }
         }
