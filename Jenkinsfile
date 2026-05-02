@@ -149,6 +149,7 @@ stage('Deploy - Ansible') {
         }
     }
 }
+sh 'grep -n "Smoke Test" -A6 Jenkinsfile'
 
 stage('Smoke Test') {
     steps {
