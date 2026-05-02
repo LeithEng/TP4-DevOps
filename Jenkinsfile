@@ -88,7 +88,11 @@ stage('Docker Push') {
 stage('Infrastructure Provisioning - Terraform') {
     steps {
                 // Ensure Terraform picks the kubeconfig copied to the Jenkins home
-                withEnv(["KUBECONFIG=/var/jenkins_home/.kube/config"]) {
+                withEnv([
+                    "KUBECONFIG=/var/jenkins_home/.kube/config",
+                    "TF_DATA_DIR=/tmp/terraform-data",
+                    "TF_PLUGIN_CACHE_DIR=/tmp/terraform-plugin-cache"
+                ]) {
                         // Debug: print kubeconfig and available contexts for troubleshooting
                         sh '''
                             echo "---- /var/jenkins_home/.kube/config (head) ----"
@@ -103,7 +107,8 @@ stage('Infrastructure Provisioning - Terraform') {
                             fi
                         '''
                         dir('terraform') {
-                                sh 'terraform init'
+                            sh 'mkdir -p /tmp/terraform-data /tmp/terraform-plugin-cache'
+                            sh 'terraform init'
                                 sh '''
                                     NAMESPACE="devops-tp"
                                     if terraform state list | grep -Fxq 'kubernetes_namespace.app_namespace'; then
