@@ -90,7 +90,7 @@ stage('Infrastructure Provisioning - Terraform') {
                 // Ensure Terraform picks the kubeconfig copied to the Jenkins home
                 withEnv([
                     "KUBECONFIG=/var/jenkins_home/.kube/config",
-                    "TF_DATA_DIR=/tmp/terraform-data",
+                    "TF_DATA_DIR=/tmp/terraform-data/${BUILD_TAG}",
                     "TF_PLUGIN_CACHE_DIR=/tmp/terraform-plugin-cache"
                 ]) {
                         // Debug: print kubeconfig and available contexts for troubleshooting
@@ -108,7 +108,10 @@ stage('Infrastructure Provisioning - Terraform') {
                         '''
                         dir('terraform') {
                             sh 'mkdir -p /tmp/terraform-data /tmp/terraform-plugin-cache'
-                            sh 'terraform init'
+                            sh 'echo "TF_DATA_DIR=${TF_DATA_DIR}"'
+                            sh 'echo "TF_PLUGIN_CACHE_DIR=${TF_PLUGIN_CACHE_DIR}"'
+                            sh 'rm -rf .terraform'
+                            sh 'terraform init -reconfigure'
                                 sh '''
                                     NAMESPACE="devops-tp"
                                     if terraform state list | grep -Fxq 'kubernetes_namespace.app_namespace'; then
