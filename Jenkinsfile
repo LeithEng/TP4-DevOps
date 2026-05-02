@@ -130,6 +130,7 @@ stage('Deploy - Ansible') {
             dir('ansible') {
                 sh """
                     ansible-playbook -i inventory.ini deploy.yml \
+                      -e docker_image=leitheng/mon-app-devops \
                       -e image_tag=${BUILD_NUMBER}
                 """
             }
