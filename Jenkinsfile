@@ -154,7 +154,7 @@ stage('Smoke Test') {
     steps {
         sh """
             sleep 15
-            curl -f http://mon-app.local/health || \
+            curl -f http://mon-app-devops-svc.devops-tp.svc.cluster.local/health || \
               (echo 'SMOKE TEST FAILED - Application non accessible' && exit 1)
         """
     }
