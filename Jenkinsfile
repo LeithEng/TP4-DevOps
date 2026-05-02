@@ -106,7 +106,7 @@ stage('Infrastructure Provisioning - Terraform') {
                                 sh 'terraform init'
                                 sh '''
                                     NAMESPACE="devops-tp"
-                                    if terraform state list | grep -q '^kubernetes_namespace\.app_namespace$'; then
+                                    if terraform state list | grep -Fxq 'kubernetes_namespace.app_namespace'; then
                                         echo "Namespace already in Terraform state."
                                     else
                                         if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
