@@ -1,38 +1,38 @@
 grafana:
-	enabled: true
-	adminPassword: "devops-tp-2024"
-	service:
-		type: NodePort
-		nodePort: 32000
-	persistence:
-		enabled: false
+  enabled: true
+  adminPassword: "devops-tp-2024"
+  service:
+    type: NodePort
+    nodePort: 32000
+  persistence:
+    enabled: false
 
 prometheus:
-	prometheusSpec:
-		scrapeInterval: 15s
-		evaluationInterval: 15s
-		# Scraper l'application dans le namespace devops-tp
-		additionalScrapeConfigs:
-			- job_name: 'mon-app-devops'
-				static_configs:
-					- targets: ['mon-app-devops-svc.devops-tp.svc.cluster.local:80']
-				metrics_path: '/metrics'
-				scrape_interval: 15s
+  prometheusSpec:
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    # Scraper l'application dans le namespace devops-tp
+    additionalScrapeConfigs:
+      - job_name: "mon-app-devops"
+        static_configs:
+          - targets: ["mon-app-devops-svc.devops-tp.svc.cluster.local:80"]
+        metrics_path: "/metrics"
+        scrape_interval: 15s
 
 alertmanager:
-	enabled: true
-	config:
-		global:
-			smtp_from: 'alertmanager@devops-tp.local'
-		route:
-			group_by: ['alertname']
-			receiver: 'default-receiver'
-		receivers:
-			- name: 'default-receiver'
-				# Pour les logs seulement (pas de serveur mail en local)
+  enabled: true
+  config:
+    global:
+      smtp_from: "alertmanager@devops-tp.local"
+    route:
+      group_by: ["alertname"]
+      receiver: "default-receiver"
+    receivers:
+      - name: "default-receiver"
+        # Pour les logs seulement (pas de serveur mail en local)
 
 kubeStateMetrics:
-	enabled: true
+  enabled: true
 
 nodeExporter:
-	enabled: true
+  enabled: true
