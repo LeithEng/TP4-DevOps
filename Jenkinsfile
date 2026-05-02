@@ -154,7 +154,10 @@ stage('Smoke Test') {
     steps {
         sh """
             sleep 15
-            curl -f http://mon-app-devops-svc.devops-tp.svc.cluster.local/health || \
+            kubectl run smoke-test --rm -i --restart=Never \
+              --image=curlimages/curl:8.7.1 \
+              --namespace=devops-tp \
+              -- curl -f http://mon-app-devops-svc/health || \
               (echo 'SMOKE TEST FAILED - Application non accessible' && exit 1)
         """
     }
