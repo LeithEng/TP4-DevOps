@@ -126,11 +126,15 @@ stage('Infrastructure Provisioning - Terraform') {
 
 stage('Deploy - Ansible') {
     steps {
-        withEnv(["IMAGE_TAG=${BUILD_NUMBER}", "KUBECONFIG=/var/jenkins_home/.kube/config"]) {
+        withEnv([
+            "IMAGE_TAG=${BUILD_NUMBER}",
+            "DOCKER_IMAGE=leitheng/mon-app-devops",
+            "K8S_NAMESPACE=devops-tp",
+            "KUBECONFIG=/var/jenkins_home/.kube/config"
+        ]) {
             dir('ansible') {
                 sh """
                     ansible-playbook -i inventory.ini deploy.yml \
-                      -e docker_image=leitheng/mon-app-devops \
                       -e image_tag=${BUILD_NUMBER}
                 """
             }

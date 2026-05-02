@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mon-app-devops
-  namespace: {{ namespace }}
+  namespace: {{ k8s_namespace }}
   labels:
     app: mon-app-devops
 spec:
