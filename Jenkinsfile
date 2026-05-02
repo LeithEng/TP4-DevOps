@@ -104,6 +104,19 @@ stage('Infrastructure Provisioning - Terraform') {
                         '''
                         dir('terraform') {
                                 sh 'terraform init'
+                                sh '''
+                                    NAMESPACE="devops-tp"
+                                    if terraform state list | grep -q '^kubernetes_namespace\.app_namespace$'; then
+                                        echo "Namespace already in Terraform state."
+                                    else
+                                        if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
+                                            echo "Importing existing namespace into Terraform state: $NAMESPACE"
+                                            terraform import kubernetes_namespace.app_namespace "$NAMESPACE"
+                                        else
+                                            echo "Namespace not found in cluster. It will be created by Terraform."
+                                        fi
+                                    fi
+                                '''
                                 sh 'terraform plan -out=tfplan'
                                 sh 'terraform apply -auto-approve tfplan'
                         }

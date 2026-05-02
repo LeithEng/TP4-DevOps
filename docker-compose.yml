@@ -2,14 +2,19 @@ version: "3.8"
 
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk17
+    build:
+      context: ./jenkins
+    image: jenkins-with-docker-cli:latest
     container_name: jenkins
+    group_add:
+      - "0"
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - C:/Users/Leith/.kube/config:/var/jenkins_home/.kube/config:ro
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
 
