@@ -18,6 +18,7 @@ app.get('/metrics', async (req, res) => {
     res.set('Content-Type', client.register.contentType);
     res.end(await client.register.metrics());
   } catch (err) {
+    console.error('metrics endpoint failed', err);
     res.status(500).send('metrics error');
   }
 });
